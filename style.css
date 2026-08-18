@@ -186,7 +186,8 @@ select {
     transition: 0.3s;
 }
 
-.navbar a:hover {
+.navbar a:hover,
+.navbar a.active {
     background: #eaf3fb;
 
     color: #1f6aa5;
@@ -370,13 +371,7 @@ main {
     font-size: 19px;
 }
 
-.experience-header p {
-    color: #6b7280;
-
-    font-size: 14px;
-}
-
-.experience-header span {
+.experience-header > span {
     color: #1f6aa5;
 
     font-weight: bold;
@@ -398,6 +393,133 @@ main {
 
 .experience-card li:last-child {
     margin-bottom: 0;
+}
+
+
+/* =========================================================
+   HIDDEN COMPANY NAME
+========================================================= */
+
+.company-hidden {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 5px;
+
+    color: #7b8794;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    min-height: 28px;
+
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease,
+        color 0.35s ease;
+}
+
+
+/* LOCK CIRCLE */
+
+.lock-icon {
+    width: 27px;
+
+    height: 27px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #f0f4f8;
+
+    border: 1px solid #d7e0e8;
+
+    border-radius: 50%;
+
+    font-size: 13px;
+
+    flex-shrink: 0;
+}
+
+
+/* HIDDEN COMPANY TEXT */
+
+.company-text {
+    color: #7b8794;
+
+    font-size: 13px;
+
+    letter-spacing: 0.2px;
+}
+
+
+/* =========================================================
+   UNLOCKED COMPANY
+========================================================= */
+
+.company-hidden.unlocked {
+    color: #1f6aa5;
+
+    transform: translateX(2px);
+}
+
+.company-hidden.unlocked .lock-icon {
+    background: #eaf6ff;
+
+    border-color: #a8d5f5;
+}
+
+.company-hidden.unlocked .company-text {
+    color: #1f6aa5;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   COMPANY UNLOCK ANIMATION
+========================================================= */
+
+.company-hidden.unlocking {
+    animation:
+        companyUnlock
+        0.55s
+        ease;
+}
+
+@keyframes companyUnlock {
+
+    0% {
+        opacity: 0.5;
+
+        transform:
+            translateX(-4px)
+            scale(0.97);
+    }
+
+    50% {
+        opacity: 1;
+
+        transform:
+            translateX(3px)
+            scale(1.03);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            translateX(2px)
+            scale(1);
+    }
+
 }
 
 
@@ -567,7 +689,9 @@ main {
 
     padding-bottom: 24px;
 
-    border-bottom: 1px solid rgba(255,255,255,0.16);
+    border-bottom:
+        1px solid
+        rgba(255,255,255,0.16);
 }
 
 .contact-icon {
@@ -583,9 +707,12 @@ main {
 
     justify-content: center;
 
-    background: rgba(255,255,255,0.12);
+    background:
+        rgba(255,255,255,0.12);
 
-    border: 1px solid rgba(255,255,255,0.25);
+    border:
+        1px solid
+        rgba(255,255,255,0.25);
 
     color: #b9ddff;
 
@@ -744,7 +871,9 @@ main {
 .form-group textarea {
     width: 100%;
 
-    border: 1px solid #d7e0e8;
+    border:
+        1px solid
+        #d7e0e8;
 
     background: #fbfdff;
 
@@ -788,7 +917,8 @@ main {
     background: white;
 
     box-shadow:
-        0 0 0 3px rgba(31,106,165,0.10);
+        0 0 0 3px
+        rgba(31,106,165,0.10);
 }
 
 
@@ -829,7 +959,8 @@ main {
     transform: translateY(-2px);
 
     box-shadow:
-        0 8px 20px rgba(23,54,93,0.18);
+        0 8px 20px
+        rgba(23,54,93,0.18);
 }
 
 .submit-btn:disabled {
@@ -902,10 +1033,16 @@ footer {
     align-items: center;
 
     padding-left:
-        max(20px, calc((100% - 1060px) / 2));
+        max(
+            20px,
+            calc((100% - 1060px) / 2)
+        );
 
     padding-right:
-        max(20px, calc((100% - 1060px) / 2));
+        max(
+            20px,
+            calc((100% - 1060px) / 2)
+        );
 }
 
 footer a {
@@ -999,6 +1136,7 @@ footer a:hover {
 
         text-align: center;
     }
+
 }
 
 
@@ -1134,4 +1272,11 @@ footer a:hover {
     .form-group textarea {
         min-height: 120px;
     }
+
+    .company-hidden {
+        max-width: 100%;
+
+        flex-wrap: wrap;
+    }
+
 }
