@@ -4,12 +4,13 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
-
     /* =====================================================
-       SMOOTH SCROLL
-    ===================================================== */
+       SMOOTH NAVIGATION
+    ====================================================== */
 
-    const navLinks = document.querySelectorAll(".nav-link");
+    const navLinks = document.querySelectorAll(
+        '.navbar a[href^="#"], .btn[href^="#"], footer a[href^="#"]'
+    );
 
     navLinks.forEach(function (link) {
 
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const targetId = this.getAttribute("href");
 
-            if (!targetId || !targetId.startsWith("#")) {
+            if (!targetId || targetId === "#") {
                 return;
             }
 
@@ -40,309 +41,195 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =====================================================
-       ACTIVE NAVIGATION
-    ===================================================== */
+       CONTACT FORM
+    ====================================================== */
 
-    const sections = document.querySelectorAll("main section[id]");
+    const contactForm = document.getElementById("contactForm");
 
+    const submitBtn = document.getElementById("submitBtn");
 
-    function updateActiveNavigation() {
-
-        let currentSection = "";
-
-        const scrollPosition =
-            window.scrollY +
-            180;
+    const formStatus = document.getElementById("formStatus");
 
 
-        sections.forEach(function (section) {
-
-            const sectionTop = section.offsetTop;
-
-            const sectionHeight = section.offsetHeight;
-
-            if (
-                scrollPosition >= sectionTop &&
-                scrollPosition < sectionTop + sectionHeight
-            ) {
-
-                currentSection = section.getAttribute("id");
-
-            }
-
-        });
-
-
-        navLinks.forEach(function (link) {
-
-            link.classList.remove("active");
-
-            const href =
-                link.getAttribute("href");
-
-            if (href === "#" + currentSection) {
-
-                link.classList.add("active");
-
-            }
-
-        });
-
+    if (!contactForm) {
+        return;
     }
 
 
-    window.addEventListener(
-        "scroll",
-        updateActiveNavigation
-    );
+    contactForm.addEventListener("submit", async function (event) {
 
-    window.addEventListener(
-        "resize",
-        updateActiveNavigation
-    );
-
-    updateActiveNavigation();
+        event.preventDefault();
 
 
-    /* =====================================================
-       RECRUITER CONTACT FORM
-       FORMSPREE
-    ===================================================== */
+        /* Clear previous status */
 
-    const form =
-        document.getElementById("recruiterForm");
+        formStatus.className = "form-status";
 
-    const successMessage =
-        document.getElementById("formSuccess");
-
-    const errorMessage =
-        document.getElementById("formError");
-
-    const submitButton =
-        document.getElementById("submitButton");
+        formStatus.textContent = "";
 
 
-    if (form) {
+        /* Disable button */
 
-        form.addEventListener(
-            "submit",
-            async function (event) {
+        submitBtn.disabled = true;
 
-                event.preventDefault();
+        submitBtn.textContent = "Sending...";
 
 
-                /* Hide old messages */
-
-                successMessage.classList.remove("show");
-
-                errorMessage.classList.remove("show");
+        const formData = new FormData(contactForm);
 
 
-                /* Disable button */
+        try {
 
-                submitButton.disabled = true;
+            const response = await fetch(
+                contactForm.action,
+                {
+                    method: "POST",
 
-                submitButton.textContent =
-                    "Sending...";
+                    body: formData,
 
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+
+            if (response.ok) {
+
+                formStatus.className =
+                    "form-status success";
+
+                formStatus.textContent =
+                    "✓ Thank you! Your message has been sent successfully.";
+
+                contactForm.reset();
+
+            } else {
+
+                let data = {};
 
                 try {
-
-                    const formData =
-                        new FormData(form);
-
-
-                    const response =
-                        await fetch(
-                            form.action,
-                            {
-                                method: "POST",
-
-                                body: formData,
-
-                                headers: {
-                                    "Accept":
-                                        "application/json"
-                                }
-                            }
-                        );
-
-
-                    if (response.ok) {
-
-                        /* Show success */
-
-                        successMessage.classList.add(
-                            "show"
-                        );
-
-
-                        /* Clear form */
-
-                        form.reset();
-
-
-                        /* Scroll to message */
-
-                        setTimeout(function () {
-
-                            successMessage.scrollIntoView({
-                                behavior: "smooth",
-                                block: "center"
-                            });
-
-                        }, 100);
-
-
-                    } else {
-
-                        throw new Error(
-                            "Form submission failed"
-                        );
-
-                    }
-
+                    data = await response.json();
                 } catch (error) {
-
-                    console.error(
-                        "Form submission error:",
-                        error
-                    );
-
-                    errorMessage.classList.add(
-                        "show"
-                    );
-
+                    data = {};
                 }
 
 
-                /* Enable button */
+                formStatus.className =
+                    "form-status error";
 
-                submitButton.disabled = false;
-
-                submitButton.textContent =
-                    "Send Message";
-
-            }
-        );
-
-    }
-
-
-    /* =====================================================
-       CONTACT FORM VALIDATION
-    ===================================================== */
-
-    const emailInput =
-        document.getElementById("email");
-
-
-    if (emailInput) {
-
-        emailInput.addEventListener(
-            "input",
-            function () {
 
                 if (
-                    this.value &&
-                    !this.checkValidity()
+                    data &&
+                    data.errors &&
+                    data.errors.length > 0
                 ) {
 
-                    this.style.borderColor =
-                        "#d33";
+                    formStatus.textContent =
+                        "Something went wrong. Please check the form and try again.";
 
                 } else {
 
-                    this.style.borderColor =
-                        "";
+                    formStatus.textContent =
+                        "Something went wrong. Please try again.";
 
                 }
 
             }
-        );
 
-    }
+        } catch (error) {
+
+            formStatus.className =
+                "form-status error";
+
+            formStatus.textContent =
+                "Unable to send your message right now. Please try again later.";
+
+        }
 
 
-    /* =====================================================
-       PHONE - SIMPLE CLEANING
-    ===================================================== */
+        /* Re-enable button */
 
-    const phoneInput =
-        document.getElementById("phone");
+        submitBtn.disabled = false;
 
+        submitBtn.textContent = "Send Message";
 
-    if (phoneInput) {
-
-        phoneInput.addEventListener(
-            "input",
-            function () {
-
-                /*
-                 * Allows:
-                 * +91
-                 * numbers
-                 * spaces
-                 * hyphen
-                 * brackets
-                 */
-
-                this.value =
-                    this.value.replace(
-                        /[^0-9+\-\s()]/g,
-                        ""
-                    );
-
-            }
-        );
-
-    }
+    });
 
 
     /* =====================================================
-       BACK TO TOP
-    ===================================================== */
+       ACTIVE NAVIGATION
+    ====================================================== */
 
-    const backToTop =
-        document.querySelector(
-            'footer a[href="#summary"]'
-        );
+    const sections = document.querySelectorAll(
+        "main section[id]"
+    );
+
+    const navbarLinks = document.querySelectorAll(
+        ".navbar a"
+    );
 
 
-    if (backToTop) {
+    const observer = new IntersectionObserver(
+        function (entries) {
 
-        backToTop.addEventListener(
-            "click",
-            function (event) {
+            entries.forEach(function (entry) {
 
-                const target =
-                    document.getElementById(
-                        "summary"
-                    );
-
-                if (!target) {
+                if (!entry.isIntersecting) {
                     return;
                 }
 
-                event.preventDefault();
+                const currentId = entry.target.getAttribute("id");
 
-                target.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
+
+                navbarLinks.forEach(function (link) {
+
+                    link.classList.remove("active");
+
+                    if (
+                        link.getAttribute("href") ===
+                        "#" + currentId
+                    ) {
+
+                        link.classList.add("active");
+
+                    }
+
                 });
 
-            }
-        );
+            });
 
-    }
+        },
+        {
+            rootMargin: "-30% 0px -60% 0px",
+            threshold: 0
+        }
+    );
+
+
+    sections.forEach(function (section) {
+
+        observer.observe(section);
+
+    });
 
 
     /* =====================================================
-       PAGE LOAD
-    ===================================================== */
+       CURRENT YEAR
+    ====================================================== */
 
-    console.log(
-        "Himanshu Singh Resume Website Loaded Successfully."
+    const footerText = document.querySelector(
+        "footer p"
     );
+
+
+    if (footerText) {
+
+        const currentYear = new Date().getFullYear();
+
+        footerText.textContent =
+            `© ${currentYear} Himanshu Singh`;
+
+    }
 
 });
