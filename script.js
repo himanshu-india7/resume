@@ -2,117 +2,36 @@
    RESUME WEBSITE JAVASCRIPT
 ========================================================= */
 
-
 document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =====================================================
-       NAVBAR ACTIVE SECTION
-    ====================================================== */
+       SMOOTH SCROLL
+    ===================================================== */
 
-    const sections = document.querySelectorAll("main section");
-
-    const navLinks = document.querySelectorAll(".navbar a");
-
-
-    const observerOptions = {
-        root: null,
-        rootMargin: "-30% 0px -60% 0px",
-        threshold: 0
-    };
-
-
-    const sectionObserver = new IntersectionObserver(
-        function (entries) {
-
-            entries.forEach(function (entry) {
-
-                if (entry.isIntersecting) {
-
-                    const currentId = entry.target.getAttribute("id");
-
-
-                    navLinks.forEach(function (link) {
-
-                        link.classList.remove("active");
-
-                        const href = link.getAttribute("href");
-
-                        if (href === "#" + currentId) {
-
-                            link.classList.add("active");
-
-                        }
-
-                    });
-
-                }
-
-            });
-
-        },
-        observerOptions
-    );
-
-
-    sections.forEach(function (section) {
-
-        sectionObserver.observe(section);
-
-    });
-
-
-
-    /* =====================================================
-       SMOOTH NAVIGATION
-    ====================================================== */
+    const navLinks = document.querySelectorAll(".nav-link");
 
     navLinks.forEach(function (link) {
 
         link.addEventListener("click", function (event) {
 
-            const targetId = link.getAttribute("href");
+            const targetId = this.getAttribute("href");
 
             if (!targetId || !targetId.startsWith("#")) {
-
                 return;
-
             }
-
 
             const target = document.querySelector(targetId);
 
-
             if (!target) {
-
                 return;
-
             }
-
 
             event.preventDefault();
 
-
-            const navbar = document.querySelector(".navbar");
-
-            const navbarHeight = navbar
-                ? navbar.offsetHeight
-                : 0;
-
-
-            const targetPosition =
-                target.getBoundingClientRect().top +
-                window.pageYOffset -
-                navbarHeight -
-                10;
-
-
-            window.scrollTo({
-
-                top: targetPosition,
-
-                behavior: "smooth"
-
+            target.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
             });
 
         });
@@ -120,25 +39,90 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
+    /* =====================================================
+       ACTIVE NAVIGATION
+    ===================================================== */
+
+    const sections = document.querySelectorAll("main section[id]");
+
+
+    function updateActiveNavigation() {
+
+        let currentSection = "";
+
+        const scrollPosition =
+            window.scrollY +
+            180;
+
+
+        sections.forEach(function (section) {
+
+            const sectionTop = section.offsetTop;
+
+            const sectionHeight = section.offsetHeight;
+
+            if (
+                scrollPosition >= sectionTop &&
+                scrollPosition < sectionTop + sectionHeight
+            ) {
+
+                currentSection = section.getAttribute("id");
+
+            }
+
+        });
+
+
+        navLinks.forEach(function (link) {
+
+            link.classList.remove("active");
+
+            const href =
+                link.getAttribute("href");
+
+            if (href === "#" + currentSection) {
+
+                link.classList.add("active");
+
+            }
+
+        });
+
+    }
+
+
+    window.addEventListener(
+        "scroll",
+        updateActiveNavigation
+    );
+
+    window.addEventListener(
+        "resize",
+        updateActiveNavigation
+    );
+
+    updateActiveNavigation();
+
 
     /* =====================================================
-       RECRUITER FORM
-    ====================================================== */
+       RECRUITER CONTACT FORM
+       FORMSPREE
+    ===================================================== */
 
     const form =
         document.getElementById("recruiterForm");
 
+    const successMessage =
+        document.getElementById("formSuccess");
 
-    const status =
-        document.getElementById("formStatus");
-
+    const errorMessage =
+        document.getElementById("formError");
 
     const submitButton =
         document.getElementById("submitButton");
 
 
     if (form) {
-
 
         form.addEventListener(
             "submit",
@@ -147,10 +131,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 event.preventDefault();
 
 
-                status.textContent = "";
+                /* Hide old messages */
 
-                status.className = "form-status";
+                successMessage.classList.remove("show");
 
+                errorMessage.classList.remove("show");
+
+
+                /* Disable button */
 
                 submitButton.disabled = true;
 
@@ -158,11 +146,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     "Sending...";
 
 
-                const formData =
-                    new FormData(form);
-
-
                 try {
+
+                    const formData =
+                        new FormData(form);
 
 
                     const response =
@@ -183,108 +170,91 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     if (response.ok) {
 
+                        /* Show success */
 
-                        status.textContent =
-                            "Thank you! Your message has been sent successfully.";
-
-
-                        status.classList.add(
-                            "success"
+                        successMessage.classList.add(
+                            "show"
                         );
 
+
+                        /* Clear form */
 
                         form.reset();
 
 
-                        submitButton.textContent =
-                            "Message Sent ✓";
+                        /* Scroll to message */
 
+                        setTimeout(function () {
 
-                        setTimeout(
-                            function () {
+                            successMessage.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center"
+                            });
 
-                                submitButton.disabled =
-                                    false;
-
-                                submitButton.textContent =
-                                    "Send Message";
-
-                            },
-                            4000
-                        );
+                        }, 100);
 
 
                     } else {
 
-
-                        const data =
-                            await response.json()
-                                .catch(
-                                    function () {
-                                        return {};
-                                    }
-                                );
-
-
-                        if (
-                            data &&
-                            data.errors
-                        ) {
-
-                            status.textContent =
-                                data.errors
-                                    .map(
-                                        function (error) {
-                                            return error.message;
-                                        }
-                                    )
-                                    .join(", ");
-
-                        } else {
-
-                            status.textContent =
-                                "Something went wrong. Please try again.";
-
-                        }
-
-
-                        status.classList.add(
-                            "error"
+                        throw new Error(
+                            "Form submission failed"
                         );
-
-
-                        submitButton.disabled =
-                            false;
-
-                        submitButton.textContent =
-                            "Send Message";
 
                     }
 
-
                 } catch (error) {
-
 
                     console.error(
                         "Form submission error:",
                         error
                     );
 
-
-                    status.textContent =
-                        "Unable to send the message. Please try again or contact me by email.";
-
-
-                    status.classList.add(
-                        "error"
+                    errorMessage.classList.add(
+                        "show"
                     );
 
+                }
 
-                    submitButton.disabled =
-                        false;
 
-                    submitButton.textContent =
-                        "Send Message";
+                /* Enable button */
+
+                submitButton.disabled = false;
+
+                submitButton.textContent =
+                    "Send Message";
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       CONTACT FORM VALIDATION
+    ===================================================== */
+
+    const emailInput =
+        document.getElementById("email");
+
+
+    if (emailInput) {
+
+        emailInput.addEventListener(
+            "input",
+            function () {
+
+                if (
+                    this.value &&
+                    !this.checkValidity()
+                ) {
+
+                    this.style.borderColor =
+                        "#d33";
+
+                } else {
+
+                    this.style.borderColor =
+                        "";
 
                 }
 
@@ -294,26 +264,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* =====================================================
-       DOWNLOAD TRACKING / BUTTON FEEDBACK
-    ====================================================== */
+       PHONE - SIMPLE CLEANING
+    ===================================================== */
 
-    const downloadButton =
-        document.querySelector(
-            'a[download]'
-        );
+    const phoneInput =
+        document.getElementById("phone");
 
 
-    if (downloadButton) {
+    if (phoneInput) {
 
-        downloadButton.addEventListener(
-            "click",
+        phoneInput.addEventListener(
+            "input",
             function () {
 
-                console.log(
-                    "Resume download requested."
-                );
+                /*
+                 * Allows:
+                 * +91
+                 * numbers
+                 * spaces
+                 * hyphen
+                 * brackets
+                 */
+
+                this.value =
+                    this.value.replace(
+                        /[^0-9+\-\s()]/g,
+                        ""
+                    );
 
             }
         );
@@ -321,25 +299,50 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
-
     /* =====================================================
-       CURRENT YEAR
-    ====================================================== */
+       BACK TO TOP
+    ===================================================== */
 
-    const footerYear =
+    const backToTop =
         document.querySelector(
-            "footer p"
+            'footer a[href="#summary"]'
         );
 
 
-    if (footerYear) {
+    if (backToTop) {
 
-        footerYear.innerHTML =
-            "© " +
-            new Date().getFullYear() +
-            " Himanshu Singh";
+        backToTop.addEventListener(
+            "click",
+            function (event) {
+
+                const target =
+                    document.getElementById(
+                        "summary"
+                    );
+
+                if (!target) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }
+        );
 
     }
 
+
+    /* =====================================================
+       PAGE LOAD
+    ===================================================== */
+
+    console.log(
+        "Himanshu Singh Resume Website Loaded Successfully."
+    );
 
 });
