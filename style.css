@@ -186,11 +186,16 @@ select {
     transition: 0.3s;
 }
 
-.navbar a:hover,
-.navbar a.active {
+.navbar a:hover {
     background: #eaf3fb;
 
     color: #1f6aa5;
+}
+
+.navbar a.active {
+    background: #17365d;
+
+    color: white;
 }
 
 
@@ -279,17 +284,22 @@ main {
 
 
 /* =========================================================
-   SKILLS
+   SKILLS GRID
 ========================================================= */
 
 .skills-grid {
     display: grid;
 
     grid-template-columns:
-        repeat(2, 1fr);
+        repeat(3, 1fr);
 
     gap: 18px;
 }
+
+
+/* =========================================================
+   SKILL CARD
+========================================================= */
 
 .skill-card {
     background: white;
@@ -303,7 +313,9 @@ main {
     box-shadow:
         0 6px 20px rgba(23,54,93,0.06);
 
-    transition: 0.3s;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .skill-card:hover {
@@ -325,6 +337,8 @@ main {
     color: #5d6875;
 
     font-size: 14px;
+
+    line-height: 1.7;
 }
 
 
@@ -369,6 +383,8 @@ main {
     color: #17365d;
 
     font-size: 19px;
+
+    margin-bottom: 2px;
 }
 
 .experience-header > span {
@@ -397,129 +413,57 @@ main {
 
 
 /* =========================================================
-   HIDDEN COMPANY NAME
+   COMPANY HIDDEN / COMPANY LOCK
 ========================================================= */
 
 .company-hidden {
-    display: inline-flex;
+    display: flex;
 
     align-items: center;
 
-    gap: 8px;
+    gap: 7px;
 
-    margin-top: 5px;
+    margin-top: 4px;
 
-    color: #7b8794;
+    color: #6b7280;
 
     font-size: 14px;
 
-    font-weight: 600;
-
-    min-height: 28px;
+    min-height: 24px;
 
     transition:
-        opacity 0.35s ease,
-        transform 0.35s ease,
-        color 0.35s ease;
+        color 0.3s ease,
+        background 0.3s ease;
 }
-
-
-/* LOCK CIRCLE */
 
 .lock-icon {
-    width: 27px;
-
-    height: 27px;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    background: #f0f4f8;
-
-    border: 1px solid #d7e0e8;
-
-    border-radius: 50%;
-
     font-size: 13px;
 
-    flex-shrink: 0;
+    line-height: 1;
 }
-
-
-/* HIDDEN COMPANY TEXT */
 
 .company-text {
-    color: #7b8794;
+    color: #6b7280;
 
-    font-size: 13px;
+    font-size: 14px;
 
-    letter-spacing: 0.2px;
+    transition:
+        color 0.3s ease;
 }
 
 
 /* =========================================================
-   UNLOCKED COMPANY
+   COMPANY REVEALED
 ========================================================= */
 
-.company-hidden.unlocked {
+.company-hidden.company-revealed {
+    color: #1f6aa5;
+}
+
+.company-hidden.company-revealed .company-text {
     color: #1f6aa5;
 
-    transform: translateX(2px);
-}
-
-.company-hidden.unlocked .lock-icon {
-    background: #eaf6ff;
-
-    border-color: #a8d5f5;
-}
-
-.company-hidden.unlocked .company-text {
-    color: #1f6aa5;
-
-    font-weight: 700;
-}
-
-
-/* =========================================================
-   COMPANY UNLOCK ANIMATION
-========================================================= */
-
-.company-hidden.unlocking {
-    animation:
-        companyUnlock
-        0.55s
-        ease;
-}
-
-@keyframes companyUnlock {
-
-    0% {
-        opacity: 0.5;
-
-        transform:
-            translateX(-4px)
-            scale(0.97);
-    }
-
-    50% {
-        opacity: 1;
-
-        transform:
-            translateX(3px)
-            scale(1.03);
-    }
-
-    100% {
-        opacity: 1;
-
-        transform:
-            translateX(2px)
-            scale(1);
-    }
-
+    font-weight: bold;
 }
 
 
@@ -546,7 +490,9 @@ main {
     box-shadow:
         0 7px 25px rgba(23,54,93,0.07);
 
-    transition: 0.3s;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
 }
 
 .project-card:hover {
@@ -690,8 +636,7 @@ main {
     padding-bottom: 24px;
 
     border-bottom:
-        1px solid
-        rgba(255,255,255,0.16);
+        1px solid rgba(255,255,255,0.16);
 }
 
 .contact-icon {
@@ -711,8 +656,7 @@ main {
         rgba(255,255,255,0.12);
 
     border:
-        1px solid
-        rgba(255,255,255,0.25);
+        1px solid rgba(255,255,255,0.25);
 
     color: #b9ddff;
 
@@ -872,8 +816,7 @@ main {
     width: 100%;
 
     border:
-        1px solid
-        #d7e0e8;
+        1px solid #d7e0e8;
 
     background: #fbfdff;
 
@@ -917,8 +860,7 @@ main {
     background: white;
 
     box-shadow:
-        0 0 0 3px
-        rgba(31,106,165,0.10);
+        0 0 0 3px rgba(31,106,165,0.10);
 }
 
 
@@ -959,8 +901,7 @@ main {
     transform: translateY(-2px);
 
     box-shadow:
-        0 8px 20px
-        rgba(23,54,93,0.18);
+        0 8px 20px rgba(23,54,93,0.18);
 }
 
 .submit-btn:disabled {
@@ -1001,7 +942,8 @@ main {
 
     background: #eaf8f0;
 
-    border: 1px solid #b9e7cb;
+    border:
+        1px solid #b9e7cb;
 }
 
 .form-status.error {
@@ -1011,7 +953,8 @@ main {
 
     background: #fff0f0;
 
-    border: 1px solid #f0c2c2;
+    border:
+        1px solid #f0c2c2;
 }
 
 
@@ -1033,16 +976,10 @@ footer {
     align-items: center;
 
     padding-left:
-        max(
-            20px,
-            calc((100% - 1060px) / 2)
-        );
+        max(20px, calc((100% - 1060px) / 2));
 
     padding-right:
-        max(
-            20px,
-            calc((100% - 1060px) / 2)
-        );
+        max(20px, calc((100% - 1060px) / 2));
 }
 
 footer a {
@@ -1058,6 +995,20 @@ footer a:hover {
 
 /* =========================================================
    RESPONSIVE - TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .skills-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE - MOBILE / TABLET
 ========================================================= */
 
 @media (max-width: 768px) {
@@ -1076,6 +1027,9 @@ footer a:hover {
         font-size: 17px;
     }
 
+
+    /* NAVIGATION */
+
     .navbar {
         justify-content: flex-start;
 
@@ -1088,16 +1042,23 @@ footer a:hover {
         white-space: nowrap;
     }
 
+
+    /* GRIDS */
+
     .skills-grid,
     .project-grid {
         grid-template-columns: 1fr;
     }
+
+
+    /* EXPERIENCE */
 
     .experience-header {
         flex-direction: column;
 
         gap: 5px;
     }
+
 
     .section {
         padding: 50px 0;
@@ -1107,11 +1068,17 @@ footer a:hover {
         font-size: 23px;
     }
 
+
+    /* EDUCATION */
+
     .education-card {
         align-items: flex-start;
 
         flex-direction: column;
     }
+
+
+    /* CONTACT */
 
     .contact-info {
         grid-template-columns: 1fr;
@@ -1129,6 +1096,9 @@ footer a:hover {
         font-size: 23px;
     }
 
+
+    /* FOOTER */
+
     footer {
         flex-direction: column;
 
@@ -1141,7 +1111,7 @@ footer a:hover {
 
 
 /* =========================================================
-   RESPONSIVE - MOBILE
+   RESPONSIVE - SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
@@ -1149,6 +1119,7 @@ footer a:hover {
     main {
         padding: 20px 14px;
     }
+
 
     .hero {
         min-height: 440px;
@@ -1174,6 +1145,9 @@ footer a:hover {
         line-height: 1.5;
     }
 
+
+    /* BUTTONS */
+
     .buttons {
         flex-direction: column;
 
@@ -1187,6 +1161,9 @@ footer a:hover {
 
         text-align: center;
     }
+
+
+    /* SECTION */
 
     .section {
         padding: 42px 0;
@@ -1206,6 +1183,9 @@ footer a:hover {
         min-width: 15px;
     }
 
+
+    /* CARDS */
+
     .card,
     .skill-card,
     .experience-card,
@@ -1213,6 +1193,20 @@ footer a:hover {
     .education-card {
         padding: 21px;
     }
+
+
+    /* COMPANY */
+
+    .company-hidden {
+        font-size: 13px;
+    }
+
+    .company-text {
+        font-size: 13px;
+    }
+
+
+    /* CONTACT */
 
     .contact-card {
         padding: 24px 20px;
@@ -1248,6 +1242,9 @@ footer a:hover {
         padding-top: 20px;
     }
 
+
+    /* FORM */
+
     .recruiter-wrapper {
         padding: 25px 17px;
     }
@@ -1271,12 +1268,6 @@ footer a:hover {
 
     .form-group textarea {
         min-height: 120px;
-    }
-
-    .company-hidden {
-        max-width: 100%;
-
-        flex-wrap: wrap;
     }
 
 }

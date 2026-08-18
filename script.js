@@ -6,70 +6,47 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     /* =====================================================
-       SMOOTH NAVIGATION
+       ELEMENTS
     ====================================================== */
 
-    const navLinks = document.querySelectorAll(
-        '.navbar a[href^="#"], .btn[href^="#"], footer a[href^="#"]'
-    );
+    const contactForm =
+        document.getElementById("contactForm");
 
+    const submitBtn =
+        document.getElementById("submitBtn");
 
-    navLinks.forEach(function (link) {
-
-        link.addEventListener("click", function (event) {
-
-            const targetId =
-                this.getAttribute("href");
-
-
-            if (!targetId || targetId === "#") {
-                return;
-            }
-
-
-            const target =
-                document.querySelector(targetId);
-
-
-            if (!target) {
-                return;
-            }
-
-
-            event.preventDefault();
-
-
-            target.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-        });
-
-    });
-
+    const formStatus =
+        document.getElementById("formStatus");
 
 
     /* =====================================================
-       COMPANY NAME UNLOCK FUNCTION
+       COMPANY LOCK CONFIGURATION
     ====================================================== */
 
-    function unlockCompanyNames() {
+    const COMPANY_UNLOCK_KEY =
+        "himanshu_resume_company_unlocked";
 
 
-        const companyElements =
-            document.querySelectorAll(
-                ".company-hidden"
-            );
+    /* =====================================================
+       COMPANY REVEAL FUNCTION
+    ====================================================== */
+
+    function revealCompanies() {
+
+        const hiddenCompanies =
+            document.querySelectorAll(".company-hidden");
 
 
-        companyElements.forEach(function (company) {
-
+        hiddenCompanies.forEach(function (company) {
 
             const companyName =
-                company.getAttribute(
-                    "data-company"
-                );
+                company.getAttribute("data-company");
+
+            const companyText =
+                company.querySelector(".company-text");
+
+            const lockIcon =
+                company.querySelector(".lock-icon");
 
 
             if (!companyName) {
@@ -77,42 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            /* ---------------------------------------------
-               Start animation
-            --------------------------------------------- */
-
-            company.classList.add(
-                "unlocking"
-            );
-
-
-            /* ---------------------------------------------
-               Change lock icon
-            --------------------------------------------- */
-
-            const lockIcon =
-                company.querySelector(
-                    ".lock-icon"
-                );
-
-
-            if (lockIcon) {
-
-                lockIcon.textContent =
-                    "🔓";
-
-            }
-
-
-            /* ---------------------------------------------
-               Change hidden text
-            --------------------------------------------- */
-
-            const companyText =
-                company.querySelector(
-                    ".company-text"
-                );
-
+            /* Change hidden text */
 
             if (companyText) {
 
@@ -122,12 +64,19 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            /* ---------------------------------------------
-               Add unlocked class
-            --------------------------------------------- */
+            /* Change lock icon */
+
+            if (lockIcon) {
+
+                lockIcon.textContent = "🔓";
+
+            }
+
+
+            /* Add revealed class */
 
             company.classList.add(
-                "unlocked"
+                "company-revealed"
             );
 
         });
@@ -135,87 +84,146 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
 
+    /* =====================================================
+       CHECK IF COMPANIES WERE ALREADY UNLOCKED
+    ====================================================== */
+
+    try {
+
+        const alreadyUnlocked =
+            localStorage.getItem(
+                COMPANY_UNLOCK_KEY
+            );
+
+
+        if (alreadyUnlocked === "true") {
+
+            revealCompanies();
+
+        }
+
+    } catch (error) {
+
+        console.log(
+            "Local storage is not available."
+        );
+
+    }
+
+
+    /* =====================================================
+       SMOOTH NAVIGATION
+    ====================================================== */
+
+    const navLinks =
+        document.querySelectorAll(
+            '.navbar a[href^="#"], ' +
+            '.btn[href^="#"], ' +
+            'footer a[href^="#"]'
+        );
+
+
+    navLinks.forEach(function (link) {
+
+        link.addEventListener(
+            "click",
+            function (event) {
+
+                const targetId =
+                    this.getAttribute("href");
+
+
+                if (
+                    !targetId ||
+                    targetId === "#"
+                ) {
+                    return;
+                }
+
+
+                const target =
+                    document.querySelector(
+                        targetId
+                    );
+
+
+                if (!target) {
+                    return;
+                }
+
+
+                event.preventDefault();
+
+
+                target.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }
+        );
+
+    });
+
 
     /* =====================================================
        CONTACT FORM
     ====================================================== */
-
-    const contactForm =
-        document.getElementById(
-            "contactForm"
-        );
-
-
-    const submitBtn =
-        document.getElementById(
-            "submitBtn"
-        );
-
-
-    const formStatus =
-        document.getElementById(
-            "formStatus"
-        );
-
 
     if (!contactForm) {
         return;
     }
 
 
-
-    /* =====================================================
-       FORM SUBMIT
-    ====================================================== */
-
     contactForm.addEventListener(
         "submit",
         async function (event) {
 
-
             event.preventDefault();
 
 
-            /* ---------------------------------------------
-               Clear previous status
-            --------------------------------------------- */
+            /* =============================================
+               CLEAR PREVIOUS STATUS
+            ============================================== */
 
-            formStatus.className =
-                "form-status";
+            if (formStatus) {
 
+                formStatus.className =
+                    "form-status";
 
-            formStatus.textContent =
-                "";
+                formStatus.textContent =
+                    "";
 
-
-            /* ---------------------------------------------
-               Disable submit button
-            --------------------------------------------- */
-
-            submitBtn.disabled =
-                true;
+            }
 
 
-            submitBtn.textContent =
-                "Sending...";
+            /* =============================================
+               DISABLE SUBMIT BUTTON
+            ============================================== */
+
+            if (submitBtn) {
+
+                submitBtn.disabled = true;
+
+                submitBtn.textContent =
+                    "Sending...";
+
+            }
 
 
-            /* ---------------------------------------------
-               Get form data
-            --------------------------------------------- */
+            /* =============================================
+               GET FORM DATA
+            ============================================== */
 
             const formData =
-                new FormData(
-                    contactForm
-                );
+                new FormData(contactForm);
 
+
+            /* =============================================
+               SEND FORM TO FORMSPREE
+            ============================================== */
 
             try {
-
-
-                /* -----------------------------------------
-                   Send form to Formspree
-                ----------------------------------------- */
 
                 const response =
                     await fetch(
@@ -233,79 +241,69 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
 
 
-
-                /* =================================================
+                /* =========================================
                    SUCCESS
-                ================================================== */
+                ========================================== */
 
                 if (response.ok) {
 
 
-                    /* -----------------------------------------
-                       Success message
-                    ----------------------------------------- */
+                    /* -------------------------------------
+                       SHOW SUCCESS MESSAGE
+                    -------------------------------------- */
 
-                    formStatus.className =
-                        "form-status success";
+                    if (formStatus) {
+
+                        formStatus.className =
+                            "form-status success";
+
+                        formStatus.textContent =
+                            "✓ Thank you! Your message has been sent successfully.";
+
+                    }
 
 
-                    formStatus.textContent =
-                        "✓ Thank you! Your message has been sent successfully.";
-
-
-
-                    /* -----------------------------------------
-                       Reset form
-                    ----------------------------------------- */
+                    /* -------------------------------------
+                       RESET FORM
+                    -------------------------------------- */
 
                     contactForm.reset();
 
 
-
-                    /* -----------------------------------------
+                    /* -------------------------------------
                        UNLOCK COMPANY NAMES
-                    ----------------------------------------- */
+                    -------------------------------------- */
 
-                    unlockCompanyNames();
-
-
-
-                    /* -----------------------------------------
-                       Move recruiter toward experience
-                    ----------------------------------------- */
-
-                    setTimeout(
-                        function () {
+                    revealCompanies();
 
 
-                            const experienceSection =
-                                document.getElementById(
-                                    "experience"
-                                );
+                    /* -------------------------------------
+                       SAVE UNLOCK STATUS
+                    -------------------------------------- */
+
+                    try {
+
+                        localStorage.setItem(
+                            COMPANY_UNLOCK_KEY,
+                            "true"
+                        );
+
+                    } catch (storageError) {
+
+                        console.log(
+                            "Unable to save unlock status."
+                        );
+
+                    }
+
+                }
 
 
-                            if (experienceSection) {
+                /* =========================================
+                   ERROR RESPONSE
+                ========================================== */
 
-
-                                experienceSection.scrollIntoView({
-                                    behavior: "smooth",
-                                    block: "start"
-                                });
-
-
-                            }
-
-                        },
-                        800
-                    );
-
-
-                } else {
-
-
-                    /* =================================================
-                       FORM ERROR
-                    ================================================== */
+                else {
 
                     let data = {};
 
@@ -315,69 +313,86 @@ document.addEventListener("DOMContentLoaded", function () {
                         data =
                             await response.json();
 
-                    } catch (error) {
+                    } catch (jsonError) {
 
                         data = {};
 
                     }
 
 
-                    formStatus.className =
-                        "form-status error";
+                    if (formStatus) {
+
+                        formStatus.className =
+                            "form-status error";
 
 
-                    if (
-                        data &&
-                        data.errors &&
-                        data.errors.length > 0
-                    ) {
+                        if (
+                            data &&
+                            data.errors &&
+                            data.errors.length > 0
+                        ) {
 
-                        formStatus.textContent =
-                            "Something went wrong. Please check the form and try again.";
+                            formStatus.textContent =
+                                "Something went wrong. Please check the form and try again.";
 
-                    } else {
+                        } else {
 
-                        formStatus.textContent =
-                            "Something went wrong. Please try again.";
+                            formStatus.textContent =
+                                "Something went wrong. Please try again.";
+
+                        }
 
                     }
 
                 }
 
-
-            } catch (error) {
-
-
-                /* =================================================
-                   NETWORK ERROR
-                ================================================== */
-
-                formStatus.className =
-                    "form-status error";
+            }
 
 
-                formStatus.textContent =
-                    "Unable to send your message right now. Please try again later.";
+            /* =============================================
+               NETWORK ERROR
+            ============================================== */
+
+            catch (error) {
+
+                console.error(
+                    "Form submission error:",
+                    error
+                );
+
+
+                if (formStatus) {
+
+                    formStatus.className =
+                        "form-status error";
+
+                    formStatus.textContent =
+                        "Unable to send your message right now. Please try again later.";
+
+                }
 
             }
 
 
-
-            /* =================================================
+            /* =============================================
                RE-ENABLE BUTTON
-            ================================================== */
+            ============================================== */
 
-            submitBtn.disabled =
-                false;
+            finally {
 
+                if (submitBtn) {
 
-            submitBtn.textContent =
-                "Send Message";
+                    submitBtn.disabled = false;
 
+                    submitBtn.textContent =
+                        "Send Message";
+
+                }
+
+            }
 
         }
     );
-
 
 
     /* =====================================================
@@ -396,77 +411,78 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
 
-    const observer =
-        new IntersectionObserver(
-            function (entries) {
+    if (
+        sections.length > 0 &&
+        navbarLinks.length > 0
+    ) {
 
 
-                entries.forEach(
-                    function (entry) {
+        const observer =
+            new IntersectionObserver(
+                function (entries) {
+
+                    entries.forEach(
+                        function (entry) {
+
+                            if (
+                                !entry.isIntersecting
+                            ) {
+                                return;
+                            }
 
 
-                        if (!entry.isIntersecting) {
-                            return;
-                        }
-
-
-                        const currentId =
-                            entry.target.getAttribute(
-                                "id"
-                            );
-
-
-                        navbarLinks.forEach(
-                            function (link) {
-
-
-                                link.classList.remove(
-                                    "active"
+                            const currentId =
+                                entry.target.getAttribute(
+                                    "id"
                                 );
 
 
-                                if (
-                                    link.getAttribute(
-                                        "href"
-                                    ) ===
-                                    "#" + currentId
-                                ) {
+                            navbarLinks.forEach(
+                                function (link) {
 
-
-                                    link.classList.add(
+                                    link.classList.remove(
                                         "active"
                                     );
 
+
+                                    if (
+                                        link.getAttribute(
+                                            "href"
+                                        ) ===
+                                        "#" + currentId
+                                    ) {
+
+                                        link.classList.add(
+                                            "active"
+                                        );
+
+                                    }
+
                                 }
+                            );
 
-                            }
-                        );
+                        }
+                    );
+
+                },
+                {
+                    rootMargin:
+                        "-30% 0px -60% 0px",
+
+                    threshold: 0
+                }
+            );
 
 
-                    }
-                );
+        sections.forEach(
+            function (section) {
 
+                observer.observe(section);
 
-            },
-            {
-                rootMargin:
-                    "-30% 0px -60% 0px",
-
-                threshold: 0
             }
         );
 
-
-    sections.forEach(
-        function (section) {
-
-            observer.observe(
-                section
-            );
-
-        }
-    );
-
+    }
 
 
     /* =====================================================
@@ -480,7 +496,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     if (footerText) {
-
 
         const currentYear =
             new Date().getFullYear();
